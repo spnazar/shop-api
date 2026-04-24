@@ -27,9 +27,10 @@ func main() {
 	productHandler := &handlers.ProductHandler{DB: database}
 	categoryHandler := &handlers.CategoryHandler{DB: database}
 
-	http.HandleFunc("/products", logger(productHandler.GetAll))
-	http.HandleFunc("/products/create", logger(productHandler.Create))
-	http.HandleFunc("/products/delete", logger(productHandler.Delete))
+	http.HandleFunc("/login", handlers.Login)
+	http.HandleFunc("/products", logger(handlers.AuthMiddleware(productHandler.GetAll)))
+	http.HandleFunc("/products/create", logger(handlers.AuthMiddleware(productHandler.Create)))
+	http.HandleFunc("/products/delete", logger(handlers.AuthMiddleware(productHandler.Delete)))
 	http.HandleFunc("/categories", logger(categoryHandler.GetAll))
 
 	fmt.Println("Сервер запущен на порту 8080...")
