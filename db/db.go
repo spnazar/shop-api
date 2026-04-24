@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -20,20 +21,25 @@ func Connect() *sql.DB {
 		os.Getenv("DB_NAME"),
 	)
 
-	database, err := sql.Open("postgres", connStr)
-	if err != nil {
-		fmt.Println("Ошибка подключения:", err)
-		return nil
+	var database *sql.DB
+	var err error
+
+	// Пробуем подключиться 10 раз
+	for i := 0; i < 10; i++ {
+		database, err = sql.Open("postgres", connStr)
+		if err == nil {
+			err = database.Ping()
+			if err == nil {
+				fmt.Println("Подключились к PostgreSQL!")
+				return database
+			}
+		}
+		fmt.Printf("Попытка %d — жду базу...\n", i+1)
+		time.Sleep(2 * time.Second)
 	}
 
-	err = database.Ping()
-	if err != nil {
-		fmt.Println("Не могу подключиться:", err)
-		return nil
-	}
-
-	fmt.Println("Подключились к PostgreSQL!")
-	return database
+	fmt.Println("Не могу подключиться к базе!")
+	return nil
 }
 
 func Init(database *sql.DB) {
