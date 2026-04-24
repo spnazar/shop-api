@@ -47,6 +47,16 @@ name=iPhone&price=500000&category_id=1
 Удалить товар:
 DELETE http://localhost:8080/products/delete?id=1
 
+## Авторизация
+
+Получить токен:
+POST /login
+username=alibek&password=12345
+
+Использовать токен:
+GET /products
+Authorization: ВАШ_ТОКЕН
+
 ## Структура проекта
 
 shop-api/
